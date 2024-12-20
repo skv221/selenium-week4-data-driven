@@ -42,5 +42,6 @@ for i in range(2, maxRow + 1):
         cellObj = sheetData.cell(row=i, column=j)
         value.append(cellObj.value)
     table.add_row(value)
+ss.close()
 
 print(table) #Printing the table
