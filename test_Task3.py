@@ -1,8 +1,9 @@
-import pytest
-import openpyxl
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import ActionChains
+import pytest
+import openpyxl
 import time
 
 def getExcelData(excelFile):
@@ -19,6 +20,9 @@ def getExcelData(excelFile):
         excelData.append(row)
     return excelData
 
+def xstr(s):
+    return '' if s is None else str(s)
+
 # print(getExcelData("D:\Selenium Practices\Week 4\Test Form.xlsx"))
 #Sending multiple test cases and expectations as Parameters
 @pytest.mark.parametrize("name, email, mobile, gender, expYears, skills, qaTools, details, expectedMessage", getExcelData("D:\Selenium Practices\Week 4\Test Form.xlsx"))
@@ -27,21 +31,24 @@ def test_submit(setup_browser, name, email, mobile, gender, expYears, skills, qa
     driver = setup_browser #this one can be retrieved from pytest fixture
     driver.get("https://qavalidation.com/demo-form/")
     driver.implicitly_wait(30)
-    #Sending the parameters to the form
+    actions = ActionChains(driver)
     
-    driver.find_element(By.NAME, "g4072-fullname").send_keys(name)
-    driver.find_element(By.NAME, "g4072-email").send_keys(email)
+    #Sending the parameters to the form
+    driver.find_element(By.NAME, "g4072-fullname").send_keys(xstr(name))
+    driver.find_element(By.NAME, "g4072-email").send_keys(xstr(email))  
     driver.find_element(By.NAME, "g4072-phonenumber").send_keys(mobile)
-    driver.find_element(By.XPATH, "//select[@name='g4072-gender']/option[text()='"+ gender +"']")
-    driver.find_element(By.XPATH, "//button[@type='submit']").click()
-    experience = "Above 5" if int(expYears) > 5 else expYears
-    driver.find_element(By.ID, "g4072-yearsofexperience-" + experience)
+    # actions.move_to_element(driver.find_element(By.XPATH, "//select[@name='g4072-gender']/option[text()='"+ gender +"']"))
+    driver.find_element(By.XPATH, "//select[@name='g4072-gender']/option[text()='"+ gender +"']").click()
+    experience = "Above 5" if int(expYears) > 5 else str(expYears)
+    # actions.move_to_element(driver.find_element(By.ID, "g4072-yearsofexperience-" + experience))
+    driver.find_element(By.ID, "g4072-yearsofexperience-" + experience).click()
     qaSkills = skills.split(', ')
     for skill in qaSkills:
+        # actions.move_to_element(driver.find_element(By.ID, "g4072-skills-" + skill))
         driver.find_element(By.ID, "g4072-skills-" + skill).click()
-    driver.find_element(By.XPATH, "//select[@name='g4072-qatools']/option[text()='"+ qaTools +"']")
-    driver.find_element(By.NAME, "g4072-otherdetails").send_keys(details)
-    time.sleep(5)
+    driver.find_element(By.XPATH, "//select[@name='g4072-qatools']/option[text()='"+ qaTools +"']").click()
+    driver.find_element(By.NAME, "g4072-otherdetails").send_keys(xstr(details))
+    driver.implicitly_wait(30)
     driver.find_element(By.XPATH, "//button[@type='submit']").click()
     try:
         successMessage = WebDriverWait(driver, 10).until(
