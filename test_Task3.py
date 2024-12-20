@@ -22,6 +22,7 @@ def getExcelData(excelFile):
     spreadSheet.close()
     return excelData
 
+#Function to update result in the excel sheet
 def writeResultInExcel(excelFile, name, actualResult):
     spreadSheet = openpyxl.load_workbook(excelFile)
     sheetData = spreadSheet.active
@@ -45,8 +46,7 @@ def test_submit(setup_browser, name, email, mobile, gender, expYears, skills, qa
     driver = setup_browser #this one can be retrieved from pytest fixture
     driver.get("https://qavalidation.com/demo-form/")
     driver.implicitly_wait(30)
-    actions = ActionChains(driver)
-    
+        
     #Sending the test data to the form
     driver.find_element(By.NAME, "g4072-fullname").send_keys(xstr(name))
     driver.find_element(By.NAME, "g4072-email").send_keys(xstr(email))  
