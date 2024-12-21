@@ -1,10 +1,8 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver import ActionChains
 import pytest
 import openpyxl
-import time
 
 #Function to get Test Data from Excel
 def getExcelData(excelFile):
